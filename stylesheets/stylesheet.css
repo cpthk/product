@@ -1,0 +1,22 @@
+html
+{
+}
+
+body
+{
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+@font-face
+{
+	font-family: 'Champagne & Limousines';
+	src: url('../fonts/Champagne & Limousines.ttf') format('truetype');
+}
+
+@font-face
+{
+	font-family: 'Champagne & Limousines Bold';
+	src: url('../fonts/Champagne & Limousines Bold.ttf') format('truetype');
+}
+

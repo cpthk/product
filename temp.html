@@ -1,0 +1,261 @@
+<html>
+	<head>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+	<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="json2.js"></script>
+	<script type="text/javascript" src="underscore-min.js"></script>
+	<script type="text/javascript" src="backbone-min.js"></script>
+	<script type="text/javascript" src="Box2dWeb-2.1.a.3.min.js"></script>
+	<script type="text/javascript">
+		
+		
+		function createWorld () {
+			
+			//var b2Vec2 = Box2D.Common.Math.b2Vec2;
+			
+			
+			
+			b2World = new Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0, 9.8), true);
+			
+			createBoundaries();
+			addElementToWorld();
+			setDebugDraw();
+			
+			
+			document.getElementById("canvas").addEventListener("mousedown", function (event) {
+				isMouseDown = true;
+				updateMouseCoordinates (event);
+				document.addEventListener("mousemove", updateMouseCoordinates, true);
+				}, true);
+			document.getElementById("canvas").addEventListener("mouseup", function () {
+				document.removeEventListener("mousemove", updateMouseCoordinates, true);
+				isMouseDown = false;}, true);
+		}
+		
+		
+		function updateMouseCoordinates (event) {
+			//alert(document.getElementById('canvas').x);
+			mouseX = (event.clientX - 
+				getElementCoordinates(document.getElementById('canvas')).x) / pixelMeterRatio;
+			mouseY = (event.clientY - 
+				getElementCoordinates(document.getElementById('canvas')).y) / pixelMeterRatio;
+		}
+		
+		
+		function createBoundaries () {
+			
+			var b2BodyDef;
+			var b2Body;
+			var b2PolygonShape;
+			var b2FixtureDef;
+			var canvasElement = document.getElementById('canvas');
+			
+			/* top */
+			b2BodyDef = new Box2D.Dynamics.b2BodyDef;
+			b2BodyDef.position.Set(canvasElement.width / 2 / pixelMeterRatio, 
+				0 / pixelMeterRatio);
+			b2BodyDef.type = Box2D.Dynamics.b2Body.b2_staticBody;
+			b2Body =  b2World.CreateBody(b2BodyDef);
+			
+			b2PolygonShape = new Box2D.Collision.Shapes.b2PolygonShape();
+			b2PolygonShape.SetAsBox(canvasElement.width / 2 / pixelMeterRatio, 
+				boundaryThickness / 2 / pixelMeterRatio);
+			
+			b2FixtureDef = new Box2D.Dynamics.b2FixtureDef();
+			b2FixtureDef.shape = b2PolygonShape;
+			b2FixtureDef.friction = 0.5;
+			b2FixtureDef.restitution = 0.5;
+			
+			b2Body.CreateFixture(b2FixtureDef);
+			
+			
+			
+			/* bottom */
+			b2BodyDef = new Box2D.Dynamics.b2BodyDef;
+			b2BodyDef.position.Set(canvasElement.width / 2 / pixelMeterRatio, 
+				canvasElement.height / pixelMeterRatio);
+			b2BodyDef.type = Box2D.Dynamics.b2Body.b2_staticBody;
+			b2Body =  b2World.CreateBody(b2BodyDef);
+			
+			b2PolygonShape = new Box2D.Collision.Shapes.b2PolygonShape();
+			b2PolygonShape.SetAsBox(canvasElement.width / 2 / pixelMeterRatio, 
+				boundaryThickness / 2 / pixelMeterRatio);
+			
+			b2FixtureDef = new Box2D.Dynamics.b2FixtureDef();
+			b2FixtureDef.shape = b2PolygonShape;
+			b2FixtureDef.friction = 0.5;
+			b2FixtureDef.restitution = 0.5;
+			
+			b2Body.CreateFixture(b2FixtureDef);
+			
+			
+			/* left */
+			b2BodyDef = new Box2D.Dynamics.b2BodyDef;
+			b2BodyDef.position.Set(0 / pixelMeterRatio, 
+				canvasElement.height / 2 / pixelMeterRatio);
+			b2BodyDef.type = Box2D.Dynamics.b2Body.b2_staticBody;
+			b2Body =  b2World.CreateBody(b2BodyDef);
+			
+			b2PolygonShape = new Box2D.Collision.Shapes.b2PolygonShape();
+			b2PolygonShape.SetAsBox(boundaryThickness / 2 / pixelMeterRatio, 
+				canvasElement.height / 2 / pixelMeterRatio);
+			
+			b2FixtureDef = new Box2D.Dynamics.b2FixtureDef();
+			b2FixtureDef.shape = b2PolygonShape;
+			b2FixtureDef.friction = 0.5;
+			b2FixtureDef.restitution = 0.5;
+			
+			b2Body.CreateFixture(b2FixtureDef);
+			
+			
+			/* right */
+			b2BodyDef = new Box2D.Dynamics.b2BodyDef;
+			b2BodyDef.position.Set(canvasElement.width / pixelMeterRatio, 
+				canvasElement.height / 2 / pixelMeterRatio);
+			b2BodyDef.type = Box2D.Dynamics.b2Body.b2_staticBody;
+			b2Body =  b2World.CreateBody(b2BodyDef);
+			
+			b2PolygonShape = new Box2D.Collision.Shapes.b2PolygonShape();
+			b2PolygonShape.SetAsBox(boundaryThickness / 2 / pixelMeterRatio, 
+				canvasElement.height / 2 / pixelMeterRatio);
+			
+			b2FixtureDef = new Box2D.Dynamics.b2FixtureDef();
+			b2FixtureDef.shape = b2PolygonShape;
+			b2FixtureDef.friction = 0.5;
+			b2FixtureDef.restitution = 0.5;
+			
+			b2Body.CreateFixture(b2FixtureDef);
+			
+			
+		}
+		
+		
+		function addElementToWorld () {
+			
+			var b2BodyDef = new Box2D.Dynamics.b2BodyDef;
+			b2BodyDef.position.Set(100 / pixelMeterRatio, 
+				100 / pixelMeterRatio);
+			//b2BodyDef.angle
+			b2BodyDef.type = Box2D.Dynamics.b2Body.b2_dynamicBody;
+			
+			var b2Body =  b2World.CreateBody(b2BodyDef);
+			var b2PolygonShape = new Box2D.Collision.Shapes.b2PolygonShape();
+			b2PolygonShape.SetAsOrientedBox(100 / pixelMeterRatio, 100 / pixelMeterRatio, 
+				new Box2D.Common.Math.b2Vec2(100 / pixelMeterRatio, 100 / pixelMeterRatio), 0);
+			
+			var b2FixtureDef = new Box2D.Dynamics.b2FixtureDef();
+			b2FixtureDef.shape = b2PolygonShape;
+			b2FixtureDef.density = 0.7;
+			b2FixtureDef.friction = 0.5;
+			b2FixtureDef.restitution = 0.5;
+			
+			b2Body.CreateFixture(b2FixtureDef);
+			
+		}
+		
+		
+		function setDebugDraw () {
+			
+			var b2DebugDraw = new Box2D.Dynamics.b2DebugDraw();
+			b2DebugDraw.SetSprite(document.getElementById('canvas').getContext("2d"));
+			b2DebugDraw.SetDrawScale(30.0);
+			b2DebugDraw.SetFillAlpha(0.5);
+			b2DebugDraw.SetLineThickness(1.0);
+			b2DebugDraw.SetFlags(Box2D.Dynamics.b2DebugDraw.e_shapeBit | 
+				Box2D.Dynamics.b2DebugDraw.e_jointBit);
+			b2World.SetDebugDraw(b2DebugDraw);
+			
+			window.setInterval(updateWorld, 1000 / 60);
+		}
+		
+		
+		var mouseX;
+		var mouseY;
+		var isMouseDown = false;
+		var b2Joint = null;
+		
+		
+		function updateWorld (e) {
+			//alert(e.clientX);
+			controlMouse();
+			b2World.Step(1 / 60, 10, 10);
+			b2World.DrawDebugData();
+			b2World.ClearForces();
+			
+			
+			
+		}
+		
+		
+		function controlMouse () {
+			
+			if (isMouseDown == true && b2Joint == null) {
+				var elementAtMouse = getElementFromWorld();//alert(elementAtMouse);
+				if (elementAtMouse != null) {
+					//alert(mouseX);
+					var b2MouseJointDef = new Box2D.Dynamics.Joints.b2MouseJointDef();
+					b2MouseJointDef.bodyA = b2World.GetGroundBody();
+					b2MouseJointDef.bodyB = elementAtMouse;
+					b2MouseJointDef.target.Set(mouseX, mouseY);
+					b2MouseJointDef.collideConnected = true;
+					b2MouseJointDef.maxForce = 300 * elementAtMouse.GetMass();
+					b2Joint = b2World.CreateJoint(b2MouseJointDef);
+					//elementAtMouse.SetAwake(true);
+				}
+			}
+			if (b2Joint != null) {
+				if (isMouseDown == true) {
+					b2Joint.SetTarget(new Box2D.Common.Math.b2Vec2(mouseX, mouseY));
+				}
+				else {
+					b2World.DestroyJoint(b2Joint);
+					b2Joint = null;
+				}
+			}
+		}
+		
+		
+		function getElementFromWorld () {
+			
+			var mouseVector = new Box2D.Common.Math.b2Vec2(mouseX, mouseY);
+			var elementAtMouse = null;
+			
+			function queryPointCallback (b2Fixture) {
+				//alert(b2Fixture.GetBody().GetType());
+				if (b2Fixture.GetBody().GetType() == Box2D.Dynamics.b2Body.b2_dynamicBody) {
+					elementAtMouse = b2Fixture.GetBody();
+					//alert(elementAtMouse2);
+					return false;
+				}
+				return true;
+			}
+			
+			b2World.QueryPoint(queryPointCallback, mouseVector);//alert(elementAtMouse);
+			return elementAtMouse;
+		}
+		
+		
+		
+		
+		
+		function getElementCoordinates (element) {
+			
+			var x = 0;
+			var y = 0;
+			while(element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
+				x += element.offsetLeft - element.scrollLeft;
+				y += element.offsetTop - element.scrollTop;
+				element = element.offsetParent;
+			}
+			return {x: x, y: y};
+		}
+		
+		
+		</script>
+	
+	<body>
+		<div id="mainDiv"></div>
+		<canvas id="canvas" width="2000" height="1800"></canvas>
+
+	</body>
+</html>
